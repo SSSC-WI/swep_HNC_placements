@@ -41,8 +41,8 @@ college_xy = college_postcode %>%
 
 # clean social ------------------------------------------------------------
 
-social %>%
-  select(college) %>%
+social = social %>%
+  select(college, enrolled = no_of_enrolled_students, placements_needed = no_who_need_placements) %>%
   filter(!is.na(college) &
            college != "Total") %>%
   left_join(college_names, by = c(college = "hnc_social_name")) %>%
@@ -60,6 +60,10 @@ social %>%
 
 
 
+# IO ----------------------------------------------------------------------
+
+social %>%
+  write_csv("social_clean.csv")
 
 
 
