@@ -1,0 +1,109 @@
+---
+title: "HNC social care student placements"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: scroll
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+```
+
+```{r packages}
+library(tidyverse)
+library(rgdal)
+library(sf)
+library(leaflet)
+library(DT)
+library(glue)
+library(plotly)
+```
+
+
+
+
+
+```{r read and clean, results = F}
+df = read_csv("social_clean.csv")
+```
+
+
+Graphics
+=======================================================================
+
+
+### Map of students requiring placements
+
+```{r map}
+
+x = df %>% 
+  drop_na()
+
+pal <- colorNumeric(
+  palette = "YlGnBu",
+  domain = x$placements_needed
+)
+
+y = x %>% 
+  mutate(tooltip = glue('<b>College:</b> {centre_name} <br><b>Placements needed:</b> {`placements_needed`}'))
+
+x %>% 
+  drop_na() %>% 
+  st_as_sf(coords = c("easting", "northing"),
+           crs = 27700) %>% 
+  st_transform(CRS("+init=epsg:4326")) %>% 
+  leaflet() %>% 
+  addProviderTiles(providers$CartoDB.Positron) %>% 
+  setView(lng = -3, lat = 58, zoom = 5) %>% 
+  addCircleMarkers(radius = x$placements_needed,
+                   fillColor = ~pal(placements_needed),
+                   color = "black",
+                   stroke = T, fillOpacity = 0.8,
+                   popup = y$tooltip) %>%
+  addLegend("bottomleft", pal = pal, values = ~placements_needed,
+            title = "Placements needed",
+            opacity = 0.8)
+
+
+```
+
+### What proportion of students have placements?
+
+```{r proportion}
+x = df %>%
+  mutate(centre_name = fct_reorder(centre_name, placements_needed),
+         Placed = enrolled - placements_needed) %>% 
+  select(-college, -easting, -northing, -enrolled) %>% 
+  pivot_longer(!centre_name, names_to = "type") %>% 
+  mutate(type = replace(type, type == "placements_needed",
+                        "Placements needed")) %>% 
+  ggplot(aes(centre_name, value,
+             fill = type)) +
+  geom_col() +
+  scale_fill_brewer(type = "qual", palette = "Dark2") +
+  coord_flip() +
+  labs(title = "",
+       x = "",
+       y = "Students",
+       fill = "") +
+  theme_bw() +
+  theme(text = element_text(size = 14))
+
+ggplotly(x)
+```
+
+
+Data Table
+=======================================================================
+
+```{r summary table}
+df %>% 
+  mutate(percent_placed = scales::percent(placements_needed / enrolled, 1)) %>% 
+  DT::datatable(extensions = 'Buttons',
+                filter = 'top',
+                options = list(dom = 'Blfrtip',
+                               buttons = c('copy', 'csv'),
+                               lengthMenu = list(c(15, 25, 50, -1),
+                                             c(15, 25, 50, "All"))))
+```
