@@ -56,7 +56,7 @@ x %>%
   leaflet() %>% 
   addProviderTiles(providers$CartoDB.Positron) %>% 
   setView(lng = -3, lat = 58, zoom = 5) %>% 
-  addCircleMarkers(radius = x$placements_needed,
+  addCircleMarkers(radius = x$placements_needed_log * 5,
                    fillColor = ~pal(placements_needed),
                    color = "black",
                    stroke = T, fillOpacity = 0.8,
@@ -74,7 +74,7 @@ x %>%
 x = df %>%
   mutate(centre_name = fct_reorder(centre_name, placements_needed),
          Placed = enrolled - placements_needed) %>% 
-  select(-college, -easting, -northing, -enrolled) %>% 
+  select(-college, -easting, -northing, -enrolled, -placements_needed_log) %>% 
   pivot_longer(!centre_name, names_to = "type") %>% 
   mutate(type = replace(type, type == "placements_needed",
                         "Placements needed")) %>% 
@@ -98,8 +98,9 @@ Data Table
 =======================================================================
 
 ```{r summary table}
-df %>% 
-  mutate(percent_placed = scales::percent(placements_needed / enrolled, 1)) %>% 
+df %>%
+  select(-placements_needed_log) %>% 
+  mutate(percent_placed = scales::percent((enrolled - placements_needed) / enrolled, 1)) %>% 
   DT::datatable(extensions = 'Buttons',
                 filter = 'top',
                 options = list(dom = 'Blfrtip',

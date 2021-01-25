@@ -44,9 +44,17 @@ college_xy = college_postcode %>%
 social = social %>%
   select(college, enrolled = no_of_enrolled_students, placements_needed = no_who_need_placements) %>%
   filter(!is.na(college) &
-           college != "Total") %>%
+           !college %in% c("Total", "Lothian College")) %>%
   left_join(college_names, by = c(college = "hnc_social_name")) %>%
   left_join(college_xy)
+
+
+# transform for outliers --------------------------------------------------
+
+social = social %>%
+  mutate(placements_needed_log = log(placements_needed),
+         placements_needed_log = replace(placements_needed_log,
+                                         placements_needed_log == -Inf, 0))
 
 
 # clean early years -------------------------------------------------------
