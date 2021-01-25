@@ -6,3 +6,6 @@
 *.docx#
 *.xlsx
 *.xlsx#
+*.csv
+*.html
+
