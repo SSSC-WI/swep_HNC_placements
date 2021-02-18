@@ -29,6 +29,57 @@ df = read_csv("social_clean.csv")
 ```
 
 
+Summary
+=======================================================================
+
+About {padding=100}
+-------------------------------------
+
+```{r logo}
+knitr::include_graphics("LOGO_pad.jpg")
+``` 
+
+### About
+
+These data have been collected by the SSSC (https://www.sssc.uk.com/) to inform placement requirements on social services programmes accepted for registration by the SSSC.
+
+Many thanks to the staff of Scotland's colleges for submitting data and making this work possible.
+
+
+Value boxes
+-------------------------------------
+
+### Colleges
+
+```{r vb colleges}
+length(unique(df$college)) %>% 
+  valueBox(icon = "fa-university")
+```
+
+### Students
+
+```{r vb students}
+sum(df$enrolled) %>% 
+  valueBox(icon = "fa-graduation-cap")
+```
+
+### Placements required
+
+```{r vb placements needed}
+sum(df$placements_needed) %>% 
+  valueBox(icon = "fa-question-circle")
+```
+
+### Placed
+
+```{r vb placed gauge}
+round(100 * (1 - (sum(df$placements_needed) / sum(df$enrolled))), 1) %>% 
+  gauge(min = 0, max = 100, symbol = '%', gaugeSectors(
+  success = c(80, 100), warning = c(40, 79), danger = c(0, 39)
+))
+```
+
+
 Graphics
 =======================================================================
 
