@@ -81,7 +81,8 @@ df_clean = x %>%
          enrolled = as.numeric(enrolled),
          not_placed = as.numeric(not_placed),
          not_placed = if_else(is.na(not_placed) & placement_req == "yes",
-                              enrolled, not_placed))
+                              enrolled, not_placed)) %>%
+  drop_na(enrolled)
 
 
 # transform for outliers --------------------------------------------------
