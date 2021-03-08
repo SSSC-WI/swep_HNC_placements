@@ -84,27 +84,6 @@ df_clean = x %>%
                               enrolled, not_placed))
 
 
-# QA ----------------------------------------------------------------------
-
-x = df %>%
-  select(contains("placement")) %>%
-  pivot_longer(everything())
-
-x = sum(as.numeric(x$value), na.rm = T)
-y = sum(df_clean$not_placed, na.rm = T)
-
-stopifnot("Incorect unplaced students" = x == y)
-
-x = df %>%
-  select(contains("enrolled")) %>%
-  pivot_longer(everything())
-
-x = sum(as.numeric(x$value), na.rm = T)
-y = sum(df_clean$enrolled, na.rm = T)
-
-stopifnot("Incorect enrolled students" = x == y)
-
-
 # transform for outliers --------------------------------------------------
 
 df_clean = df_clean %>%
