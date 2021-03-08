@@ -16,8 +16,7 @@ library(readxl)
 # 0 in NA to account for mandatory fields.
 # 0 should be dropped when subsequent data come in.
 
-df = read_excel("Placement Provision.xlsx", na = c("-99", "0")) %>%
-  janitor::clean_names()
+df = read_excel("Placement Provision.xlsx", na = c("-99", "0"))
 
 college_postcode = read_excel("colleges.xlsx") %>%
   janitor::clean_names()
@@ -40,8 +39,9 @@ college_xy = college_postcode %>%
 # clean -------------------------------------------------------------------
 
 x = df %>%
-  select(-id, -completion_time, -email, -name, -your_name) %>%
-  rename(centre_name = which_college_are_you_responding_for) %>%
+  select(-ID, -`Completion time`, -Email, -Name, -`Your name`,
+         start_time = `Start time`) %>%
+  rename(centre_name = `Which college are you responding for?`) %>%
   left_join(college_xy)
 
 x_enrol = x %>%
@@ -51,9 +51,10 @@ x_enrol = x %>%
   group_by(centre_name, name) %>%
   filter(start_time == max(start_time)) %>%
   ungroup() %>%
-  mutate(name = str_remove(name, "how_many_"),
-         name = str_remove(name, "_students_are_enrolled")) %>%
-  separate(name, c("course", "option"), sep = "_on_")
+  mutate(name = str_remove(name, "\\?"),
+         name = str_remove(name, "How many "),
+         name = str_remove(name, " students are enrolled")) %>%
+  separate(name, c("course", "option"), sep = " on ")
 
 
 x_place = x %>%
@@ -63,9 +64,9 @@ x_place = x %>%
   group_by(centre_name, course) %>%
   filter(start_time == max(start_time)) %>%
   ungroup() %>%
-  mutate(course = str_remove(course, "how_many_"),
-         course = str_remove(course, "_students_do_not_have_a_placement"),
-         course = str_remove(course, "_option_2"))
+  mutate(course = str_remove(course, "How many "),
+         course = str_remove(course, " students do not have a placement"),
+         course = str_remove(course, " option 2"))
 
 df_clean = x %>%
   select(centre_name, start_time, easting, northing) %>%
@@ -82,9 +83,7 @@ df_clean = x %>%
          not_placed = as.numeric(not_placed),
          not_placed = if_else(is.na(not_placed) & placement_req == "yes",
                               enrolled, not_placed),
-         start_time = str_sub(start_time, 1, 10),
-         course = str_replace_all(course, "_", " "),
-         option = str_replace_all(option, "_", " ")) %>%
+         start_time = str_sub(start_time, 1, 10)) %>%
   drop_na(enrolled)
 
 
