@@ -81,7 +81,10 @@ df_clean = x %>%
          enrolled = as.numeric(enrolled),
          not_placed = as.numeric(not_placed),
          not_placed = if_else(is.na(not_placed) & placement_req == "yes",
-                              enrolled, not_placed)) %>%
+                              enrolled, not_placed),
+         start_time = str_sub(start_time, 1, 10),
+         course = str_replace_all(course, "_", " "),
+         option = str_replace_all(option, "_", " ")) %>%
   drop_na(enrolled)
 
 
