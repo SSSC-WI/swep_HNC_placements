@@ -1,5 +1,5 @@
 ---
-title: "HNC social care student placements"
+title: "Student placements in social services"
 output: 
   flexdashboard::flex_dashboard:
     orientation: columns
@@ -142,16 +142,21 @@ x %>%
 
 ### What proportion of students have placements?
 
-```{r proportion, eval=F}
+```{r proportion}
 x = df %>%
-  mutate(centre_name = fct_reorder(centre_name, placements_needed),
-         Placed = enrolled - placements_needed) %>% 
-  select(-college, -easting, -northing, -enrolled, -placements_needed_log) %>% 
-  pivot_longer(!centre_name, names_to = "type") %>% 
-  mutate(type = replace(type, type == "placements_needed",
+  filter(placement_req == "yes") %>% 
+  group_by(centre_name) %>% 
+  summarise(enrolled = sum(enrolled),
+            not_placed = sum(not_placed)) %>% 
+  ungroup() %>% 
+  mutate(centre_name = fct_reorder(centre_name, not_placed),
+         Placed = enrolled - not_placed) %>% 
+  select(-enrolled, College = centre_name) %>% 
+  pivot_longer(!College, names_to = "Status", values_to = "Students") %>% 
+  mutate(Status = replace(Status, Status == "not_placed",
                         "Placements needed")) %>% 
-  ggplot(aes(centre_name, value,
-             fill = type)) +
+  ggplot(aes(College, Students,
+             fill = Status)) +
   geom_col() +
   scale_fill_brewer(type = "qual", palette = "Dark2") +
   coord_flip() +
@@ -169,10 +174,11 @@ ggplotly(x)
 Data Table
 =======================================================================
 
-```{r summary table, eval=F}
+```{r summary table}
 df %>%
-  select(-placements_needed_log) %>% 
-  mutate(percent_placed = scales::percent((enrolled - placements_needed) / enrolled, 1)) %>% 
+  select(-enrolled_log, -not_placed_log, -easting, -northing,
+         data_updated = start_time) %>% 
+  mutate(percent_placed = scales::percent((enrolled - not_placed) / enrolled, 1)) %>% 
   DT::datatable(extensions = 'Buttons',
                 filter = 'top',
                 options = list(dom = 'Blfrtip',
