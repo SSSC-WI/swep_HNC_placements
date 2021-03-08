@@ -64,7 +64,8 @@ x_place = x %>%
   group_by(centre_name, course) %>%
   filter(start_time == max(start_time)) %>%
   ungroup() %>%
-  mutate(course = str_remove(course, "How many "),
+  mutate(course = str_remove(course, "\\?"),
+         course = str_remove(course, "How many "),
          course = str_remove(course, " students do not have a placement"),
          course = str_remove(course, " option 2"))
 
@@ -72,9 +73,9 @@ df_clean = x %>%
   select(centre_name, start_time, easting, northing) %>%
   full_join(x_enrol) %>%
   full_join(x_place) %>%
-  mutate(placement_req = if_else(option %in% c("option_1",
-                                               "option_3",
-                                               "theoretical_group_award"),
+  mutate(placement_req = if_else(option %in% c("option 1",
+                                               "option 3",
+                                               "theoretical group award"),
                                  "no", "yes"),
          not_placed = replace(not_placed,
                               placement_req == "no",
