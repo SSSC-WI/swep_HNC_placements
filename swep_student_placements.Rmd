@@ -25,7 +25,7 @@ library(plotly)
 
 
 ```{r read and clean, results = F}
-df = read_csv("social_clean.csv")
+df = read_csv("placements_clean.csv")
 ```
 
 
@@ -58,35 +58,45 @@ Value boxes
 ### Colleges
 
 ```{r vb colleges}
-length(unique(df$college)) %>% 
+length(unique(df$centre_name)) %>% 
   valueBox(icon = "fa-university")
 ```
 
-### Students
+### All Students
 
 ```{r vb students}
 sum(df$enrolled) %>% 
   valueBox(icon = "fa-graduation-cap")
 ```
 
+### Students on practical courses
+
+```{r vb students on practical}
+sum(df$enrolled[df$placement_req == "yes"]) %>% 
+  valueBox(icon = "fa-graduation-cap")
+```
+
 ### Placements required
 
 ```{r vb placements needed}
-sum(df$placements_needed) %>% 
+sum(df$not_placed, na.rm = T) %>% 
   valueBox(icon = "fa-question-circle")
 ```
 
 ### Placed
 
 ```{r vb placed gauge}
-round(100 * (1 - (sum(df$placements_needed) / sum(df$enrolled))), 1) %>% 
+x = df %>% 
+  filter(placement_req == "yes")
+
+round(100 * (1 - (sum(x$not_placed, na.rm = T) / sum(x$enrolled))), 1) %>% 
   gauge(min = 0, max = 100, symbol = '%', gaugeSectors(
-  success = c(80, 100), warning = c(40, 79), danger = c(0, 39)
+  success = c(100, 80), warning = c(25, 79), danger = c(0, 24)
 ))
 ```
 
 
-Graphics
+By College
 =======================================================================
 
 
@@ -95,15 +105,20 @@ Graphics
 ```{r map}
 
 x = df %>% 
-  drop_na()
+  filter(placement_req == "yes") %>% 
+  group_by(centre_name, easting, northing) %>% 
+  summarise(enrolled = sum(enrolled),
+            not_placed = sum(not_placed),
+            not_placed_log = sum(not_placed_log)) %>% 
+  ungroup()
 
 pal <- colorNumeric(
   palette = "YlGnBu",
-  domain = x$placements_needed
+  domain = x$not_placed
 )
 
 y = x %>% 
-  mutate(tooltip = glue('<b>College:</b> {centre_name} <br><b>Placements needed:</b> {`placements_needed`}'))
+  mutate(tooltip = glue('<b>College:</b> {centre_name} <br><b>Placement students: {enrolled} <br><b>Placements needed:</b> {not_placed}'))
 
 x %>% 
   drop_na() %>% 
@@ -113,12 +128,12 @@ x %>%
   leaflet() %>% 
   addProviderTiles(providers$CartoDB.Positron) %>% 
   setView(lng = -3, lat = 58, zoom = 5) %>% 
-  addCircleMarkers(radius = x$placements_needed_log * 5,
-                   fillColor = ~pal(placements_needed),
+  addCircleMarkers(radius = x$not_placed_log * 5,
+                   fillColor = ~pal(not_placed),
                    color = "black",
                    stroke = T, fillOpacity = 0.8,
                    popup = y$tooltip) %>%
-  addLegend("bottomleft", pal = pal, values = ~placements_needed,
+  addLegend("bottomleft", pal = pal, values = ~not_placed,
             title = "Placements needed",
             opacity = 0.8)
 
@@ -127,7 +142,7 @@ x %>%
 
 ### What proportion of students have placements?
 
-```{r proportion}
+```{r proportion, eval=F}
 x = df %>%
   mutate(centre_name = fct_reorder(centre_name, placements_needed),
          Placed = enrolled - placements_needed) %>% 
@@ -154,7 +169,7 @@ ggplotly(x)
 Data Table
 =======================================================================
 
-```{r summary table}
+```{r summary table, eval=F}
 df %>%
   select(-placements_needed_log) %>% 
   mutate(percent_placed = scales::percent((enrolled - placements_needed) / enrolled, 1)) %>% 
