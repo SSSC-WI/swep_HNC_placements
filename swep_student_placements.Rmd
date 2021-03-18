@@ -64,14 +64,14 @@ length(unique(df$centre_name)) %>%
 ### All Students
 
 ```{r vb students}
-sum(df$enrolled) %>% 
+sum(df$students) %>% 
   valueBox(icon = "fa-graduation-cap")
 ```
 
 ### Students on practical courses
 
 ```{r vb students on practical}
-sum(df$enrolled[df$placement_req == "yes"]) %>% 
+sum(df$students[df$placement_req == "yes"]) %>% 
   valueBox(icon = "fa-graduation-cap")
 ```
 
@@ -88,7 +88,7 @@ sum(df$not_placed, na.rm = T) %>%
 x = df %>% 
   filter(placement_req == "yes")
 
-round(100 * (1 - (sum(x$not_placed, na.rm = T) / sum(x$enrolled))), 1) %>% 
+round(100 * (1 - (sum(x$not_placed, na.rm = T) / sum(x$students))), 1) %>% 
   gauge(min = 0, max = 100, symbol = '%', gaugeSectors(
   success = c(100, 80), warning = c(25, 79), danger = c(0, 24)
 ))
@@ -106,7 +106,7 @@ By College
 x = df %>% 
   filter(placement_req == "yes") %>% 
   group_by(centre_name, easting, northing) %>% 
-  summarise(enrolled = sum(enrolled),
+  summarise(students = sum(students),
             not_placed = sum(not_placed),
             not_placed_log = sum(not_placed_log)) %>% 
   ungroup()
@@ -117,7 +117,7 @@ pal <- colorNumeric(
 )
 
 y = x %>% 
-  mutate(tooltip = glue('<b>College:</b> {centre_name} <br><b>Placement students: {enrolled} <br><b>Placements needed:</b> {not_placed}'))
+  mutate(tooltip = glue('<b>College:</b> {centre_name} <br><b>Placement students: {students} <br><b>Placements needed:</b> {not_placed}'))
 
 x %>% 
   drop_na() %>% 
@@ -143,12 +143,12 @@ x %>%
 x = df %>%
   filter(placement_req == "yes") %>% 
   group_by(centre_name) %>% 
-  summarise(enrolled = sum(enrolled),
+  summarise(students = sum(students),
             not_placed = sum(not_placed)) %>% 
   ungroup() %>% 
   mutate(centre_name = fct_reorder(centre_name, not_placed),
-         Placed = enrolled - not_placed) %>% 
-  select(-enrolled, College = centre_name) %>% 
+         Placed = students - not_placed) %>% 
+  select(-students, College = centre_name) %>% 
   pivot_longer(!College, names_to = "Status", values_to = "Students") %>% 
   mutate(Status = replace(Status, Status == "not_placed",
                         "Placements needed")) %>% 
@@ -189,14 +189,14 @@ length(unique(df_subset$centre_name)) %>%
 ### All Students
 
 ```{r HNC CP students}
-sum(df_subset$enrolled) %>% 
+sum(df_subset$students) %>% 
   valueBox(icon = "fa-graduation-cap")
 ```
 
 ### Students on practical courses
 
 ```{r HNC CP students on practical}
-sum(df_subset$enrolled[df_subset$placement_req == "yes"]) %>% 
+sum(df_subset$students[df_subset$placement_req == "yes"]) %>% 
   valueBox(icon = "fa-graduation-cap")
 ```
 
@@ -213,7 +213,7 @@ sum(df_subset$not_placed, na.rm = T) %>%
 x = df_subset %>% 
   filter(placement_req == "yes")
 
-round(100 * (1 - (sum(x$not_placed, na.rm = T) / sum(x$enrolled))), 1) %>% 
+round(100 * (1 - (sum(x$not_placed, na.rm = T) / sum(x$students))), 1) %>% 
   gauge(min = 0, max = 100, symbol = '%', gaugeSectors(
   success = c(100, 80), warning = c(25, 79), danger = c(0, 24)
 ))
@@ -230,7 +230,7 @@ Column {data-width=500}
 x = df_subset %>% 
   filter(placement_req == "yes") %>% 
   group_by(centre_name, easting, northing) %>% 
-  summarise(enrolled = sum(enrolled),
+  summarise(students = sum(students),
             not_placed = sum(not_placed),
             not_placed_log = sum(not_placed_log)) %>% 
   ungroup()
@@ -241,7 +241,7 @@ pal <- colorNumeric(
 )
 
 y = x %>% 
-  mutate(tooltip = glue('<b>College:</b> {centre_name} <br><b>Placement students: {enrolled} <br><b>Placements needed:</b> {not_placed}'))
+  mutate(tooltip = glue('<b>College:</b> {centre_name} <br><b>Placement students: {students} <br><b>Placements needed:</b> {not_placed}'))
 
 x %>% 
   drop_na() %>% 
@@ -268,12 +268,12 @@ x %>%
 x = df_subset %>%
   filter(placement_req == "yes") %>% 
   group_by(centre_name) %>% 
-  summarise(enrolled = sum(enrolled),
+  summarise(students = sum(students),
             not_placed = sum(not_placed)) %>% 
   ungroup() %>% 
   mutate(centre_name = fct_reorder(centre_name, not_placed),
-         Placed = enrolled - not_placed) %>% 
-  select(-enrolled, College = centre_name) %>% 
+         Placed = students - not_placed) %>% 
+  select(-students, College = centre_name) %>% 
   pivot_longer(!College, names_to = "Status", values_to = "Students") %>% 
   mutate(Status = replace(Status, Status == "not_placed",
                         "Placements needed")) %>% 
@@ -298,9 +298,9 @@ Data Table
 
 ```{r summary table}
 df %>%
-  select(-enrolled_log, -not_placed_log, -easting, -northing,
+  select(-students_log, -not_placed_log, -easting, -northing,
          data_updated = start_time) %>% 
-  mutate(percent_placed = scales::percent((enrolled - not_placed) / enrolled, 1)) %>% 
+  mutate(percent_placed = scales::percent((students - not_placed) / students, 1)) %>% 
   DT::datatable(extensions = 'Buttons',
                 filter = 'top',
                 options = list(dom = 'Blfrtip',

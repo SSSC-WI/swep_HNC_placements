@@ -46,8 +46,8 @@ x = df %>%
 
 x_enrol = x %>%
   select(centre_name, start_time, contains("enrolled")) %>%
-  pivot_longer(contains("enrolled"), values_to = "enrolled") %>%
-  drop_na(enrolled) %>%
+  pivot_longer(contains("enrolled"), values_to = "students") %>%
+  drop_na(students) %>%
   group_by(centre_name, name) %>%
   filter(start_time == max(start_time)) %>%
   ungroup() %>%
@@ -55,7 +55,6 @@ x_enrol = x %>%
          name = str_remove(name, "How many "),
          name = str_remove(name, " students are enrolled")) %>%
   separate(name, c("course", "option"), sep = " on ")
-
 
 x_place = x %>%
   select(centre_name, start_time, contains("placement")) %>%
@@ -80,20 +79,20 @@ df_clean = x %>%
          not_placed = replace(not_placed,
                               placement_req == "no",
                               NA),
-         enrolled = as.numeric(enrolled),
+         students = as.numeric(students),
          not_placed = as.numeric(not_placed),
          not_placed = if_else(is.na(not_placed) & placement_req == "yes",
-                              enrolled, not_placed),
+                              students, not_placed),
          start_time = str_sub(start_time, 1, 10)) %>%
-  drop_na(enrolled)
+  drop_na(students)
 
 
 # transform for outliers --------------------------------------------------
 
 df_clean = df_clean %>%
-  mutate(enrolled_log = log(enrolled),
-         enrolled_log = replace(enrolled_log,
-                                enrolled_log == -Inf, 0),
+  mutate(students_log = log(students),
+         students_log = replace(students_log,
+                                students_log == -Inf, 0),
          not_placed_log = log(not_placed),
          not_placed_log = replace(not_placed_log,
                                   not_placed_log == -Inf, 0))
