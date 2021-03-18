@@ -72,8 +72,7 @@ df_clean = x %>%
   select(centre_name, start_time, easting, northing) %>%
   full_join(x_enrol) %>%
   full_join(x_place) %>%
-  mutate(placement_req = if_else(option %in% c("option 1",
-                                               "option 3",
+  mutate(placement_req = if_else(option %in% c("option 3",
                                                "theoretical group award"),
                                  "no", "yes"),
          not_placed = replace(not_placed,
@@ -84,7 +83,10 @@ df_clean = x %>%
          not_placed = if_else(is.na(not_placed) & placement_req == "yes",
                               students, not_placed),
          start_time = str_sub(start_time, 1, 10)) %>%
-  drop_na(students)
+  drop_na(students) %>%
+  mutate(not_placed = if_else(option == "option 1" &
+                                !is.na(option),
+                              0, not_placed))
 
 
 # transform for outliers --------------------------------------------------
