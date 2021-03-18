@@ -13,9 +13,7 @@ placed_gauge = function(df_func){
   filter(placement_req == "yes")
 
   round(100 * (1 - (sum(x$not_placed, na.rm = T) / sum(x$students))), 1) %>%
-    gauge(min = 0, max = 100, symbol = '%', gaugeSectors(
-      success = c(100, 80), warning = c(25, 79), danger = c(0, 24)
-  ))
+    gauge(min = 0, max = 100, symbol = '%')
 }
 
 
