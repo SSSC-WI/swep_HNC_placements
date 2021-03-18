@@ -48,7 +48,13 @@ Many thanks to the staff of Scotland's colleges for submitting data and making t
 ### Explanation
 
 Not all courses require student placement.
-The overall number of students enrolled is shown on this page as "All Students", otherwise enrolled student numbers are for those courses requiring a placement.
+The overall number of students enrolled is shown on as "All Students", otherwise enrolled student numbers are for those courses requiring a placement.
+
+The description of course options is:
+
+* Option 1: the student has a placement or is employed in the sector.
+* Option 2: the student requires the college to find them a placement.
+* Option 3: the student is planning on attending university after their course, and so a practical placement is not required at this stage.
 
 
 Value boxes
