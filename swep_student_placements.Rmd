@@ -115,11 +115,15 @@ ggplotly(x)
 ```
 
 
-Childhood Practice
+HNC Childhood Practice {data-navmenu="By Programme"}
 =======================================================================
 
 Column {data-width=150}
 -------------------------------------
+
+### Programme
+
+**HNC Childhood Practice**
 
 ```{r HNC CP subset}
 df_subset = df %>% 
@@ -180,11 +184,15 @@ ggplotly(x)
 ```
 
 
-Social Services
+HNC Social Services {data-navmenu="By Programme"}
 =======================================================================
 
 Column {data-width=150}
 -------------------------------------
+
+### Programme
+
+**HNC Social Services**
 
 ```{r HNC SS subset}
 df_subset = df %>% 
@@ -245,15 +253,19 @@ ggplotly(x)
 ```
 
 
-Additional Support
+HNC Additional Support Needs {data-navmenu="By Programme"}
 =======================================================================
 
 Column {data-width=150}
 -------------------------------------
 
+### Programme
+
+**HNC Additional Support Needs**
+
 ```{r HNC ASN subset}
 df_subset = df %>% 
-  filter(course == "Additional Support Needs")
+  filter(course == "HNC Additional Support Needs")
 ```
 
 ### Colleges
@@ -310,11 +322,15 @@ ggplotly(x)
 ```
 
 
-Early Education
+NC Early Education and Childcare {data-navmenu="By Programme"}
 =======================================================================
 
 Column {data-width=150}
 -------------------------------------
+
+### Programme
+
+**NC Early Education and Childcare**
 
 ```{r NC EEC subset}
 df_subset = df %>% 
@@ -375,11 +391,15 @@ ggplotly(x)
 ```
 
 
-Educational Support
+PDA Educational Support Assistant {data-navmenu="By Programme"}
 =======================================================================
 
 Column {data-width=150}
 -------------------------------------
+
+### Programme
+
+**PDA Educational Support Assistant**
 
 ```{r PDA ESA subset}
 df_subset = df %>% 
