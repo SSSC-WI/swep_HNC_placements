@@ -465,7 +465,7 @@ Data Table
 
 ```{r summary table}
 df %>%
-  select(-students_log, -not_placed_log, -easting, -northing,
+  select(-students_log, -not_placed_log, -delayed_log, -easting, -northing,
          data_updated = start_time) %>% 
   mutate(percent_placed = scales::percent((students - not_placed) / students, 1)) %>% 
   DT::datatable(extensions = 'Buttons',
