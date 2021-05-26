@@ -470,6 +470,7 @@ df %>%
   mutate(percent_placed = scales::percent((students - not_placed) / students, 1)) %>% 
   DT::datatable(extensions = 'Buttons',
                 filter = 'top',
+                fillContainer = F,
                 options = list(dom = 'Blfrtip',
                                buttons = c('copy', 'csv'),
                                lengthMenu = list(c(15, 25, 50, -1),
