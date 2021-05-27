@@ -460,6 +460,33 @@ ggplotly(x)
 ```
 
 
+Updated {vertical_layout=fill style="height:65pc;"}
+=======================================================================
+
+### When did colleges last provide an update?
+ 
+```{r updated}
+x = df %>% 
+  select(centre_name, course, start_time) %>% 
+  group_by(centre_name, course) %>%
+  filter(start_time == max(start_time)) %>%
+  distinct() %>% 
+  mutate(course = str_wrap(course, 15),
+         centre_name = str_wrap(centre_name, 25),
+         start_time = factor(start_time)) %>% 
+  ggplot(aes(course, centre_name, fill = start_time)) +
+  geom_tile() +
+  scale_fill_viridis_d() +
+  labs(x = "",
+       y = "",
+       fill = "") +
+  theme_bw() +
+  theme(text = element_text(size = 14))
+
+ggplotly(x, height = 950)
+```
+
+
 Data Table
 =======================================================================
 
